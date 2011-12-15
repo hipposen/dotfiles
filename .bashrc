@@ -1,15 +1,15 @@
 # If not running interactively, don't do anything
 [ -z "$PS1" ] && return
 
+# Init for top bar
+echo
+tput init
+
 # History hijacking
 if [ -n "$PS1" ]; then
 	bind '"\C-[[A": history-search-backward'
 	bind '"\C-[[B": history-search-forward'
 fi
-
-# Init for top bar
-echo
-tput init
 
 # History adjustments
 HISTIGNORE="cd:ls:[bf]g:clear:exit:gp:gs"
@@ -30,20 +30,20 @@ shopt -s checkwinsize
 #####
 if [ -f ~/.bash_function ] && [ -d ~/.bash_function.d/ ]
 then
-	. ~/.bash_function.d/*
+	. ~/.bash_function
 fi
 
 if [ -f ~/.bash_alias ] && [ -d ~/.bash_alias.d/ ]
 then
-	. ~/.bash_alias.d/*
+	. ~/.bash_alias
 fi
 
-if [ -f /etc/bash_completion ] && ! shopt -oq posix; then
-    . /etc/bash_completion
+if [ -f ~/.bash_completion ] && ! shopt -oq posix; then
+    if [ -f /etc/bash_completion ]
+        . /etc/bash_completion
+    fi
 
-	if [ -f /etc/bash_completion ] && ! shopt -oq posix; then
-    	. /etc/bash_completion
-	fi
+    . ~/.bash_completion
 fi
 
 [ -x /usr/bin/lesspipe ] && eval "$(SHELL=/bin/sh lesspipe)"
@@ -72,21 +72,5 @@ xterm*|rxvt*)
 *)
     ;;
 esac
-
-if [ -x /usr/bin/dircolors ]; then
-    test -r ~/.dircolors && eval "$(dircolors -b ~/.dircolors)" || eval "$(dircolors -b)"
-    alias ls='ls --color=auto'
-    alias dir='dir --color=auto'
-    alias vdir='vdir --color=auto'
-
-    alias grep='grep --color=auto'
-    alias fgrep='fgrep --color=auto'
-    alias egrep='egrep --color=auto'
-fi
-
-if [ -f /etc/bash_completion ] && ! shopt -oq posix; then
-    . /etc/bash_completion
-fi
-
 
 PROMPT_COMMAND="history -a;tput sc; tput cup 0 0;tput setb 1;tput setf 7;tput bold; ~/.dotfileincludes.d/topbar.sh;tput sgr0;tput rc;"

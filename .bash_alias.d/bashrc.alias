@@ -1,0 +1,2 @@
+#!/bin/false
+alias bashrc='nano ~/.bashrc'

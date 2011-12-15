@@ -1,0 +1,36 @@
+#!/bin/bash
+
+LOOPER_DIR=~/.looper
+
+if [ ! -d $LOOPER_DIR ];then
+    mkdir $LOOPER_DIR
+fi
+
+usage() {
+    echo "looper COMMAND"
+}
+
+if [ -z "$1" ];then
+    usage
+    exit 1
+fi
+
+LOOPER_COMMAND=$1
+LOOPER_HISTORY=${LOOPER_DIR}/history_${LOOPER_COMMAND}
+if [ ! -f $LOOPER_HISTORY ];then
+    touch $LOOPER_HISTORY
+fi
+
+history -r $LOOPER_HISTORY
+
+while true; do
+    echo -e "${1}"
+    read -e ARGS
+    if [ $ARGS = "exit" ] || [ $ARGS = "quit" ];then
+        exit;
+    fi
+    history -s "$ARGS"
+    history -w $LOOPER_HISTORY
+    $LOOPER_COMMAND $ARGS
+    echo ""
+done;

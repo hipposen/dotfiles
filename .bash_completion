@@ -1,0 +1,13 @@
+#!/bin/false
+# This files purpose is to be included, not to be called
+
+if [ -d ~/.bash_completion.d/ ] && [ "$BASH_COMPLETION_D_INCLUDED" != "1" ]
+then
+    for file in $(ls -1 ~/.bash_completion.d/)
+    do
+        . ~/.bash.completion.d/${file}
+    done
+
+    # Protect functions from being included more than one time
+    BASH_COMPLETION_D_INCLUDED=1
+fi

@@ -1,0 +1,2 @@
+#!/bin/false
+alias router='ssh root@router'

@@ -1,0 +1,2 @@
+#!/bin/false
+alias chmod='sudo chmod'

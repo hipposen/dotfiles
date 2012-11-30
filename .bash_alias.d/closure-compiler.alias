@@ -1,2 +1,0 @@
-#!/bin/false
-alias closure-compiler='java -jar /usr/bin/closurecompiler.jar'

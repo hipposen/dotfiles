@@ -1,0 +1,3 @@
+#!/bin/bash
+
+notify-send -t 3500 -i change.xpm "Song changed" "$1 - $2\nFrom: $3"

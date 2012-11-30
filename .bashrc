@@ -1,61 +1,55 @@
 # If not running interactively, don't do anything
 [ -z "$PS1" ] && return
 
-# Init for top bar
-echo
-tput init
-
-# History hijacking
+# Adds history searching via arrow keys
 if [ -n "$PS1" ]; then
-	bind '"\C-[[A": history-search-backward'
-	bind '"\C-[[B": history-search-forward'
+    bind '"\C-[[A": history-search-backward'
+    bind '"\C-[[B": history-search-forward'
 fi
 
-# History adjustments
-HISTIGNORE="cd:ls:[bf]g:clear:exit:gp:gs"
-HISTCONTROL=ignoredups:ignorespace
-shopt -s histappend
-HISTSIZE=100000
-HISTFILESIZE=1000000
+# Ignore double and empty commands
+export HISTCONTROL=ignoreboth
+export HISTIGNORE="[   ]*:&:bg:fg:exit"
 
+# append to the history file, don't overwrite it
+shopt -s histappend
+
+# for setting history length see HISTSIZE and HISTFILESIZE in bash(1)
+HISTSIZE=20000
+HISTFILESIZE=100000
+
+# check the window size after each command and, if necessary, update the 
+# values of LINES and COLUMNS.
 shopt -s checkwinsize
 
-###
-#
-#  INCLUDE SECTION. THESE COMMANDS USE THE BASH_XYZ.D DIRECTORIES
-#
-#  THE ORDER OF INCLUSION MAY BE CHANGED BUT THAT MAY RESULT IN 
-#  UNEXPECTED BEHAVIOUR!
-#
-#####
-if [ -f ~/.bash_function ] && [ -d ~/.bash_function.d/ ]
-then
-	. ~/.bash_function
-fi
+# If set, the pattern "**" used in a pathname expansion context will
+# match all files and zero or more directories and subdirectories.
+shopt -s globstar
 
-if [ -f ~/.bash_alias ] && [ -d ~/.bash_alias.d/ ]
-then
-	. ~/.bash_alias
-fi
-
-if [ -f ~/.bash_completion ] && ! shopt -oq posix; then
-    if [ -f /etc/bash_completion ]
-        . /etc/bash_completion
-    fi
-
-    . ~/.bash_completion
-fi
-
+# make less more friendly for non-text input files, see lesspipe(1)
 [ -x /usr/bin/lesspipe ] && eval "$(SHELL=/bin/sh lesspipe)"
-if [ -z "$debian_chroot" ] && [ -r /etc/debian_chroot ]; then debian_chroot=$(cat /etc/debian_chroot); fi
+
+# set variable identifying the chroot you work in (used in the prompt below)
+if [ -z "$debian_chroot" ] && [ -r /etc/debian_chroot ]; then
+    debian_chroot=$(cat /etc/debian_chroot)
+fi
+
+# set a fancy prompt (non-color, unless we know we "want" color)
 case "$TERM" in
     xterm-color) color_prompt=yes;;
 esac
 
-if [ -x /usr/bin/tput ] && tput setaf 1 >&/dev/null; then
+force_color_prompt=yes
+
+if [ -n "$force_color_prompt" ]; then
+    if [ -x /usr/bin/tput ] && tput setaf 1 >&/dev/null; then
+	# We have color support; assume it's compliant with Ecma-48
+	# (ISO/IEC-6429). (Lack of such support is extremely rare, and such
+	# a case would tend to support setf rather than setaf.)
 	color_prompt=yes
-else
+    else
 	color_prompt=
+    fi
 fi
 
 if [ "$color_prompt" = yes ]; then
@@ -65,6 +59,7 @@ else
 fi
 unset color_prompt force_color_prompt
 
+# If this is an xterm set the title to user@host:dir
 case "$TERM" in
 xterm*|rxvt*)
     PS1="\[\e]0;${debian_chroot:+($debian_chroot)}\u@\h: \w\a\]$PS1"
@@ -73,4 +68,32 @@ xterm*|rxvt*)
     ;;
 esac
 
-PROMPT_COMMAND="history -a;tput sc; tput cup 0 0;tput setb 1;tput setf 7;tput bold; ~/.dotfileincludes.d/topbar.sh;tput sgr0;tput rc;"
+# enable color support of ls and also add handy aliases
+if [ -x /usr/bin/dircolors ]; then
+    test -r ~/.dircolors && eval "$(dircolors -b ~/.dircolors)" || eval "$(dircolors -b)"
+    alias ls='ls --color=auto'
+    #alias dir='dir --color=auto'
+    #alias vdir='vdir --color=auto'
+
+    alias grep='grep --color=auto'
+    alias fgrep='fgrep --color=auto'
+    alias egrep='egrep --color=auto'
+fi
+
+# some more ls aliases
+alias ll='ls -alF'
+alias la='ls -A'
+alias l='ls -CF'
+
+# Add an "alert" alias for long running commands.  Use like so:
+#   sleep 10; alert
+alias alert='notify-send --urgency=low -i "$([ $? = 0 ] && echo terminal || echo error)" "$(history|tail -n1|sed -e '\''s/^\s*[0-9]\+\s*//;s/[;&|]\s*alert$//'\'')"'
+
+if [ -f /etc/bash_completion ] && ! shopt -oq posix; then
+    . /etc/bash_completion
+fi
+
+source ~/.bash_profile
+
+# Hub command overwrite for git
+eval "$(hub alias -s)"

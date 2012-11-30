@@ -1,2 +1,0 @@
-#!/bin/false
-alias remount="sudo mount -o remount"

@@ -86,3 +86,6 @@ map <C-S-Tab> :bprevious<cr>
 " Set paste toggle button
 map <F10> :set invpaste<CR>
 set pastetoggle=<F10>
+
+" Map solarized color toggle
+call togglebg#map("<F2>")

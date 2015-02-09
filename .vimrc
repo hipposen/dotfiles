@@ -55,7 +55,7 @@ colorscheme solarized
 
 " Autostart
 autocmd vimenter * NERDTree              " Open NERDTree
-autocmd vimenter * MBEOpen               " Open minibufexplorer
+"autocmd vimenter * MBEOpen               " Open minibufexplorer
 autocmd vimenter * wincmd w              " Switch to buffer with open file
 
 " Autoend

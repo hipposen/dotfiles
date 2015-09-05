@@ -1,0 +1,84 @@
+# @help http://lifehacker.com/5574557/how-to-use-the-fast-and-powerful-mutt-email-client-with-gmail
+# @help http://jrom.net/gmail-in-mutt
+# @help https://wiki.archlinux.org/index.php/Mutt#Multiple_accounts
+
+# System settings
+set editor = '/usr/bin/vim'
+set menu_scroll=yes
+set pager_index_lines=1
+set simple_search="~f %s | ~C %s | ~s %s"
+source '~/.mutt/mutt-colors-solarized-light-256.muttrc'
+
+
+# GPG
+source '~/.mutt/gpg.rc'
+set crypt_autosign=yes
+set crypt_replysignencrypted=yes
+send-hook "~f info@example.com"    set pgp_sign_as = 0123ABCD
+
+
+# Sidebar settings
+#set sidebar_folderindent = yes
+#set sidebar_width = 
+#set sidebar_shortpath = yes
+
+
+# Sidebar navigation / toggle
+bind index,pager \CK sidebar-prev
+bind index,pager \CJ sidebar-next
+bind index,pager \CL sidebar-open
+macro index \CB '<enter-command>toggle sidebar_visible<enter><refresh>'
+macro pager \CB '<enter-command>toggle sidebar_visible<enter><redraw-screen>'
+
+
+# Key bindings
+bind editor <Tab> complete-query
+bind editor ^T complete
+bind editor <space> noop
+bind index \Co display-message
+bind index,pager A group-reply
+
+bind pager <down> next-line
+bind pager <up>   previous-line
+
+macro index R "T ~O\n;WN^t \n" "Mark all messages read"
+macro pager R "T ~O\n;WN^t \n" "Mark all messages read"
+
+macro browser <space>    <check-new>
+bind index x sync-mailbox
+macro pager x <sync-mailbox>q
+
+bind index p noop
+bind pager P noop
+
+
+# User settings
+set my_name = "mkzero"
+
+
+# General mailbox settings
+set timeout = 10
+set sort = 'threads'
+set sort_aux = 'reverse-last-date-received'
+set header_cache = '~/.cache/mutt'
+set message_cachedir = '~/.cache/mutt'
+hdr_order Date From To Cc
+alternative_order text/plain text/html *
+
+
+# General mail settings
+ignore "Authentication-Results:"
+ignore "DomainKey-Signature:"
+ignore "DKIM-Signature:"
+set auto_tag = yes
+set crypt_autosign = yes
+set crypt_replysignencrypted = yes
+set text_flowed=yes
+
+
+# Attachment settings
+auto_view text/html
+
+
+# Mailbox settings default mailbox
+source "~/.mutt/info-at-example-com"
